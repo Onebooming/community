@@ -1,5 +1,6 @@
 package com.onebooming.community.community.service;
 
+import com.onebooming.community.community.dto.PaginationDTO;
 import com.onebooming.community.community.dto.QuestionDTO;
 import com.onebooming.community.community.mapper.QuestionMapper;
 import com.onebooming.community.community.mapper.UserMapper;
@@ -56,5 +57,51 @@ public class QuestionService {
 
         return questionDTOList;
 
+    }
+
+    /**
+     * 分页查询
+     * @param page
+     * @param size
+     * @return
+     */
+    public PaginationDTO list(Integer page, Integer size) {
+
+        PaginationDTO paginationDTO = new PaginationDTO();
+
+        Integer totalCount = questionMapper.count();
+
+        paginationDTO.setPagination(totalCount, page, size);
+
+
+        if(page < 1){
+            page = 1;
+        }
+        if(page > paginationDTO.getTotalPage()){
+            page = paginationDTO.getTotalPage();
+        }
+
+
+        //10 * (i - 1)
+        Integer offsize = size * (page -1);
+
+        List<Question> questionList = questionMapper.list(offsize, size);
+        List<QuestionDTO> questionDTOList = new ArrayList<>();
+
+        for(Question question : questionList){
+            User user = userMapper.findById(question.getCreatorId());
+            //set questionDTO
+            QuestionDTO questionDTO = new QuestionDTO();
+            BeanUtils.copyProperties(question,questionDTO);
+            questionDTO.setUser(user);
+
+            //添加到集合中
+            questionDTOList.add(questionDTO);
+        }
+        //System.out.println(questionDTOList);
+        paginationDTO.setQuestions(questionDTOList);
+
+
+        return paginationDTO;
     }
 }

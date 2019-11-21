@@ -4,6 +4,7 @@ import com.onebooming.community.community.model.Question;
 import org.apache.ibatis.annotations.Insert;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
 
@@ -23,4 +24,10 @@ public interface QuestionMapper {
 
     @Select("select * from question")
     public List<Question> getAll();
+
+    @Select("select * from question limit #{offsize}, #{size}")
+    public List<Question> list(@Param(value = "offsize") Integer offsize, @Param(value = "size") Integer size);
+
+    @Select("select count(1) from question")
+    public Integer count();
 }
