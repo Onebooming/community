@@ -1,8 +1,8 @@
-package com.onebooming.community.community.provider;
+package com.onebooming.community.provider;
 
 import com.alibaba.fastjson.JSON;
-import com.onebooming.community.community.dto.AccessTokenDTO;
-import com.onebooming.community.community.dto.GithubUserDTO;
+import com.onebooming.community.dto.AccessTokenDTO;
+import com.onebooming.community.dto.GithubUserDTO;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 

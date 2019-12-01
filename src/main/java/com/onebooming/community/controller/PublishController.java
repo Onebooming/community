@@ -1,15 +1,18 @@
-package com.onebooming.community.community.controller;
+package com.onebooming.community.controller;
 
-import com.onebooming.community.community.mapper.QuestionMapper;
-import com.onebooming.community.community.model.Question;
-import com.onebooming.community.community.model.User;
+import com.onebooming.community.mapper.QuestionMapper;
+import com.onebooming.community.model.Question;
+import com.onebooming.community.model.User;
+import com.onebooming.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.print.attribute.standard.MediaSize;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -22,6 +25,19 @@ public class PublishController {
     @Autowired
     QuestionMapper questionMapper;
 
+    @Autowired
+    QuestionService questionService;
+
+    @GetMapping("/publish/{id}")
+    public String edit(@PathVariable(name = "id") Integer id,Model model){
+        Question question = questionMapper.getById(id);
+        //拿到属性，回显到页面
+        model.addAttribute("title",question.getTitle());
+        model.addAttribute("description",question.getDescription());
+        model.addAttribute("tag",question.getTag());
+        model.addAttribute("id",question.getId());
+        return "publish";
+    }
 
     /**
      * Get--渲染页面
@@ -38,6 +54,7 @@ public class PublishController {
             @RequestParam(value = "title",required = false) String title,
             @RequestParam(value = "description",required = false) String description,
             @RequestParam(value = "tag",required = false) String tag,
+            @RequestParam(value = "id",required = false) Integer id,
             HttpServletRequest request,
             Model model){
 
@@ -74,8 +91,9 @@ public class PublishController {
         question.setCreatorId(user.getId());
         question.setGmtCreate(System.currentTimeMillis());
         question.setGmtModify(System.currentTimeMillis());
+        question.setId(id);
         //添加Question对象进数据库
-        questionMapper.addQuestion(question);
+        questionService.createOrUpdate(question);
         return "redirect:/";
     }
 }

@@ -1,19 +1,16 @@
-package com.onebooming.community.community.controller;
+package com.onebooming.community.controller;
 
-import com.onebooming.community.community.dto.AccessTokenDTO;
-import com.onebooming.community.community.dto.GithubUserDTO;
-import com.onebooming.community.community.mapper.UserMapper;
-import com.onebooming.community.community.model.User;
-import com.onebooming.community.community.provider.GithubProvider;
+import com.onebooming.community.dto.AccessTokenDTO;
+import com.onebooming.community.dto.GithubUserDTO;
+import com.onebooming.community.mapper.UserMapper;
+import com.onebooming.community.model.User;
+import com.onebooming.community.provider.GithubProvider;
+import com.onebooming.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +43,9 @@ public class AuthorizeController {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
@@ -69,10 +69,8 @@ public class AuthorizeController {
             user.setToken(token);
             user.setName(githubUser.getName());
             user.setAccountId(String.valueOf(githubUser.getId()));
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(System.currentTimeMillis());
             user.setAvatarUrl(githubUser.getAvatarUrl());
-            userMapper.insert(user);
+            userService.createOrUpdate(user);
             //登录成功，写cookie和session
             response.addCookie(new Cookie("token",token));
             return "redirect:/";
@@ -80,5 +78,14 @@ public class AuthorizeController {
             //登录失败，重新登录
             return "redirect:/";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request,HttpServletResponse response){
+        request.getSession().removeAttribute("user");
+        Cookie cookie = new Cookie("token",null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return "redirect:/";
     }
 }

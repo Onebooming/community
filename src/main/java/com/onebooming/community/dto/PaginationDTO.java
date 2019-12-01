@@ -1,4 +1,4 @@
-package com.onebooming.community.community.dto;
+package com.onebooming.community.dto;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;

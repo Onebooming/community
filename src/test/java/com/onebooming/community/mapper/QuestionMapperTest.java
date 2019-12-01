@@ -1,6 +1,6 @@
-package com.onebooming.community.community.mapper;
+package com.onebooming.community.mapper;
 
-import com.onebooming.community.community.model.Question;
+import com.onebooming.community.model.Question;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

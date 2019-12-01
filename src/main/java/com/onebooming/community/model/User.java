@@ -1,4 +1,4 @@
-package com.onebooming.community.community.model;
+package com.onebooming.community.model;
 
 
 import lombok.Data;
@@ -18,6 +18,7 @@ public class User {
     private String token;
     private Long gmtCreate;
     private Long gmtModified;
+    private String bio;
     private String avatarUrl;//头像地址
 
 

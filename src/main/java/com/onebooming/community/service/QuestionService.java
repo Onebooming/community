@@ -1,11 +1,11 @@
-package com.onebooming.community.community.service;
+package com.onebooming.community.service;
 
-import com.onebooming.community.community.dto.PaginationDTO;
-import com.onebooming.community.community.dto.QuestionDTO;
-import com.onebooming.community.community.mapper.QuestionMapper;
-import com.onebooming.community.community.mapper.UserMapper;
-import com.onebooming.community.community.model.Question;
-import com.onebooming.community.community.model.User;
+import com.onebooming.community.dto.PaginationDTO;
+import com.onebooming.community.dto.QuestionDTO;
+import com.onebooming.community.mapper.QuestionMapper;
+import com.onebooming.community.mapper.UserMapper;
+import com.onebooming.community.model.Question;
+import com.onebooming.community.model.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,7 +83,11 @@ public class QuestionService {
             page = 1;
         }
         if(page > totalPage){
-            page = totalPage;
+            if (totalPage == 0){
+                page = 1;
+            }
+            else
+                page = totalPage;
         }
 
 
@@ -113,7 +117,7 @@ public class QuestionService {
         return paginationDTO;
     }
 
-    public PaginationDTO list(Integer userId, Integer page, Integer size) {
+    public PaginationDTO list2(Integer userId, Integer page, Integer size) {
         PaginationDTO paginationDTO = new PaginationDTO();
         Integer totalPage;
         Integer totalCount = questionMapper.countByUserId(userId);
@@ -140,7 +144,7 @@ public class QuestionService {
         //10 * (i - 1)
         Integer offsize = size * (page -1);
 
-        List<Question> questionList = questionMapper.list2(userId,offsize, size);
+        List<Question> questionList = questionMapper.list2(userId,offsize,size);
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
         for(Question question : questionList){
@@ -159,4 +163,25 @@ public class QuestionService {
 
         return paginationDTO;
     }
+
+    public QuestionDTO getById(Integer id) {
+        Question question = questionMapper.getById(id);
+        QuestionDTO questionDTO = new QuestionDTO();
+        BeanUtils.copyProperties(question,questionDTO);
+        User user = userMapper.findById(question.getCreatorId());
+        questionDTO.setUser(user);
+        return questionDTO;
+    }
+
+    public void createOrUpdate(Question question) {
+        if(question.getId() == null){
+            questionMapper.addQuestion(question);
+        }
+        else{
+            question.setGmtModify(System.currentTimeMillis());
+            questionMapper.updateQuestion(question);
+        }
+
+    }
+
 }

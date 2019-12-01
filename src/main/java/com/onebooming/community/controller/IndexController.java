@@ -1,8 +1,8 @@
-package com.onebooming.community.community.controller;
+package com.onebooming.community.controller;
 
-import com.onebooming.community.community.dto.PaginationDTO;
+import com.onebooming.community.dto.PaginationDTO;
 
-import com.onebooming.community.community.service.QuestionService;
+import com.onebooming.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +22,7 @@ public class IndexController {
     @GetMapping("/")
     public String index(Model model,
                         @RequestParam(name = "page",defaultValue = "1") Integer page,
-                        @RequestParam(name = "size",defaultValue = "10") Integer size) {
+                        @RequestParam(name = "size",defaultValue = "5") Integer size) {
         /**
          * 这一段的业务逻辑是说，如果用户登录过，则就会在网页中生成一个名为token的cookie（自定义的）
          * 当刷新页面时，我们先从"/"这个路径的页面中请求查询cookie，查到token，并访问数据库表，看看有没有

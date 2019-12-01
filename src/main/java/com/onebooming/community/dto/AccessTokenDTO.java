@@ -1,4 +1,4 @@
-package com.onebooming.community.community.dto;
+package com.onebooming.community.dto;
 
 /**
  * 封装的一个access_token类，定义了相关属性

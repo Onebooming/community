@@ -1,7 +1,7 @@
-package com.onebooming.community.community.interceptor;
+package com.onebooming.community.interceptor;
 
-import com.onebooming.community.community.mapper.UserMapper;
-import com.onebooming.community.community.model.User;
+import com.onebooming.community.mapper.UserMapper;
+import com.onebooming.community.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;

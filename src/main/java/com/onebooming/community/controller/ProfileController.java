@@ -1,9 +1,9 @@
-package com.onebooming.community.community.controller;
+package com.onebooming.community.controller;
 
-import com.onebooming.community.community.dto.PaginationDTO;
+import com.onebooming.community.dto.PaginationDTO;
 
-import com.onebooming.community.community.model.User;
-import com.onebooming.community.community.service.QuestionService;
+import com.onebooming.community.model.User;
+import com.onebooming.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +32,7 @@ public class ProfileController {
                           @RequestParam(name = "size",defaultValue = "5") Integer size){
 
         User user = (User) request.getSession().getAttribute("user");
+
         if (user == null){
             return "redirect/";
         }
@@ -47,7 +48,7 @@ public class ProfileController {
         }
 
 
-        PaginationDTO paginationDTO = questionService.list(user.getId(),page,size);
+        PaginationDTO paginationDTO = questionService.list2(user.getId(),page,size);
         model.addAttribute("pagination",paginationDTO);
         return "profile";
     }

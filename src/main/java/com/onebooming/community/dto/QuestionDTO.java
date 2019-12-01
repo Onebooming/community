@@ -1,13 +1,14 @@
-package com.onebooming.community.community.model;
+package com.onebooming.community.dto;
 
-
+import com.onebooming.community.model.User;
 import lombok.Data;
 
 /**
- * @author Onebooming
+ * 用于根据问题查询对应用户信息
  */
+
 @Data
-public class Question {
+public class QuestionDTO {
     private Integer id;
     private String title;//标题
     private String description;//描述
@@ -18,5 +19,5 @@ public class Question {
     private Integer browseSum;//浏览数
     private Integer thumbsupSum;//点赞数
     private String tag;//标签
-
+    private User user;
 }
