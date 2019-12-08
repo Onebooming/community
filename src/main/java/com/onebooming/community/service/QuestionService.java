@@ -2,6 +2,8 @@ package com.onebooming.community.service;
 
 import com.onebooming.community.dto.PaginationDTO;
 import com.onebooming.community.dto.QuestionDTO;
+import com.onebooming.community.exception.CustomizeErrorCode;
+import com.onebooming.community.exception.CustomizeException;
 import com.onebooming.community.mapper.QuestionMapper;
 import com.onebooming.community.mapper.UserMapper;
 import com.onebooming.community.model.Question;
@@ -184,9 +186,11 @@ public class QuestionService {
 
     public QuestionDTO getById(Integer id) {
         Question question = questionMapper.selectByPrimaryKey(id);
+        if(question == null){
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+        }
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question,questionDTO);
-
         UserExample userExample = new UserExample();
         userExample.createCriteria().andIdEqualTo(question.getCreatorId());
         User user = userMapper.selectByExample(userExample).get(0);
@@ -208,8 +212,10 @@ public class QuestionService {
             updateQuestion.setTag(question.getTag());
             QuestionExample questionExample = new QuestionExample();
             questionExample.createCriteria().andIdEqualTo(question.getId());
-            questionMapper.updateByExampleSelective(updateQuestion,questionExample);
-
+            int updated = questionMapper.updateByExampleSelective(updateQuestion,questionExample);
+            if(updated != 1){
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_UPDATE_FAILURE);
+            }
 
         }
 
