@@ -2,6 +2,7 @@ package com.onebooming.community.interceptor;
 
 import com.onebooming.community.mapper.UserMapper;
 import com.onebooming.community.model.User;
+import com.onebooming.community.model.UserExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @author Onebooming
@@ -31,10 +33,12 @@ public class SessionInterceptor implements HandlerInterceptor {
                 if ("token".equals(cookie.getName())) {
                     String token = cookie.getValue();
                     //根据token查询数据库是否存在对应的User对象
-                    User user = userMapper.findByToken(token);
-                    System.out.println(user);
-                    if (user != null) {
-                        request.getSession().setAttribute("user", user);
+                    UserExample userExample = new UserExample();
+                    userExample.createCriteria().andTokenEqualTo(token);
+                    List<User> users = userMapper.selectByExample(userExample);
+                    System.out.println(users.get(0));
+                    if (users.size() !=  0) {
+                        request.getSession().setAttribute("user", users.get(0));
                     }
 
                     break;

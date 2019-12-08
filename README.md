@@ -28,3 +28,7 @@ IEDA
 数据库
 
 
+Maven Golde Exeute
+
+mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate
+

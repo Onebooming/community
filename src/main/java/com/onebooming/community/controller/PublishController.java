@@ -23,14 +23,14 @@ import javax.servlet.http.HttpServletRequest;
 public class PublishController {
 
     @Autowired
-    QuestionMapper questionMapper;
+    private QuestionMapper questionMapper;
 
     @Autowired
     QuestionService questionService;
 
     @GetMapping("/publish/{id}")
     public String edit(@PathVariable(name = "id") Integer id,Model model){
-        Question question = questionMapper.getById(id);
+        Question question = questionMapper.selectByPrimaryKey(id);
         //拿到属性，回显到页面
         model.addAttribute("title",question.getTitle());
         model.addAttribute("description",question.getDescription());
@@ -90,7 +90,7 @@ public class PublishController {
         //question.setCreatorId(Integer.parseInt(user.getAccountId()));
         question.setCreatorId(user.getId());
         question.setGmtCreate(System.currentTimeMillis());
-        question.setGmtModify(System.currentTimeMillis());
+        question.setGmtModified(System.currentTimeMillis());
         question.setId(id);
         //添加Question对象进数据库
         questionService.createOrUpdate(question);

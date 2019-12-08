@@ -5,13 +5,17 @@ import com.onebooming.community.dto.QuestionDTO;
 import com.onebooming.community.mapper.QuestionMapper;
 import com.onebooming.community.mapper.UserMapper;
 import com.onebooming.community.model.Question;
+import com.onebooming.community.model.QuestionExample;
 import com.onebooming.community.model.User;
+import com.onebooming.community.model.UserExample;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Onebooming
@@ -27,10 +31,12 @@ public class QuestionService {
 
     public List<QuestionDTO> list(){
         List<QuestionDTO> questionDTOList = new ArrayList<>();
-        List<Question> questionList = questionMapper.getAll();
+        List<Question> questionList = questionMapper.findAll();
         for(Question question : questionList){
 
-            User user = userMapper.findById(question.getCreatorId());
+            UserExample userExample = new UserExample();
+            userExample.createCriteria().andIdEqualTo(question.getCreatorId());
+            User user = userMapper.selectByExample(userExample).get(0);
 
             QuestionDTO questionDTO = new QuestionDTO();
 
@@ -97,11 +103,18 @@ public class QuestionService {
         //10 * (i - 1)
         Integer offsize = size * (page -1);
 
-        List<Question> questionList = questionMapper.list(offsize, size);
+        Map<String,Object> params = new HashMap<>();
+        params.put("offsize",offsize);
+        params.put("size",size);
+        List<Question> questionList = questionMapper.pageList(params);
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
         for(Question question : questionList){
-            User user = userMapper.findById(question.getCreatorId());
+
+            UserExample userExample = new UserExample();
+            userExample.createCriteria().andIdEqualTo(question.getCreatorId());
+            User user = userMapper.selectByExample(userExample).get(0);
+
             //set questionDTO
             QuestionDTO questionDTO = new QuestionDTO();
             BeanUtils.copyProperties(question,questionDTO);
@@ -143,12 +156,17 @@ public class QuestionService {
 
         //10 * (i - 1)
         Integer offsize = size * (page -1);
-
-        List<Question> questionList = questionMapper.list2(userId,offsize,size);
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId",userId);
+        params.put("offsize",offsize);
+        params.put("size",size);
+        List<Question> questionList = questionMapper.pageListByUser(params);
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
         for(Question question : questionList){
-            User user = userMapper.findById(question.getCreatorId());
+            UserExample userExample = new UserExample();
+            userExample.createCriteria().andIdEqualTo(question.getCreatorId());
+            User user = userMapper.selectByExample(userExample).get(0);
             //set questionDTO
             QuestionDTO questionDTO = new QuestionDTO();
             BeanUtils.copyProperties(question,questionDTO);
@@ -165,21 +183,34 @@ public class QuestionService {
     }
 
     public QuestionDTO getById(Integer id) {
-        Question question = questionMapper.getById(id);
+        Question question = questionMapper.selectByPrimaryKey(id);
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question,questionDTO);
-        User user = userMapper.findById(question.getCreatorId());
+
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andIdEqualTo(question.getCreatorId());
+        User user = userMapper.selectByExample(userExample).get(0);
         questionDTO.setUser(user);
         return questionDTO;
     }
 
     public void createOrUpdate(Question question) {
         if(question.getId() == null){
-            questionMapper.addQuestion(question);
+            question.setGmtCreate(System.currentTimeMillis());
+            question.setGmtModified(question.getGmtCreate());
+            questionMapper.insertSelective(question);
         }
         else{
-            question.setGmtModify(System.currentTimeMillis());
-            questionMapper.updateQuestion(question);
+            Question updateQuestion = new Question();
+            updateQuestion.setGmtModified(System.currentTimeMillis());
+            updateQuestion.setTitle(question.getTitle());
+            updateQuestion.setDescription(question.getDescription());
+            updateQuestion.setTag(question.getTag());
+            QuestionExample questionExample = new QuestionExample();
+            questionExample.createCriteria().andIdEqualTo(question.getId());
+            questionMapper.updateByExampleSelective(updateQuestion,questionExample);
+
+
         }
 
     }
